@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Learning Spring Boot: Spring-a-Gram</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.css" />
+  </head>
+  <body>
+    <div class="container" layout:fragment="content">
+      <h1>Learning Spring Boot - 2nd Edition</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Image</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="image : ${images}">
+            <td th:text="${image.id}" />
+            <td th:text="${image.name}" />
+            <td>
+              <a th:href="@{'/images/' + ${image.name} + '/raw'}">
+                <img
+                  th:src="@{'/images/'+${image.name}+'/raw'}"
+                  class="thumbnail"
+                />
+              </a>
+            </td>
+            <td>
+              <form
+                th:method="delete"
+                th:action="@{'/images/' + ${image.name}}"
+              >
+                <button type="submit" th:value="Delete">delete</button>>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <form
+        th:action="@{'/images'}"
+        th:method="post"
+        enctype="multipart/form-data"
+      >
+        <p><input type="file" name="file" /></p>
+        <p><button type="submit" th:value="Upload">Upload</button></p>
+      </form>
+    </div>
+  </body>
+</html>
