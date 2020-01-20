@@ -1,8 +1,8 @@
+
 package com.example.library;
 
 import com.example.library.image.Image;
-import com.example.library.message.Message;
-import com.example.library.message.MessageRepository;
+
 import com.example.library.user.User;
 import com.example.library.user.UserRepository;
 
@@ -15,48 +15,46 @@ import org.springframework.boot.CommandLineRunner;
 
 @Component
 class MongoInitiailizer implements SmartInitializingSingleton {
-	private final MessageRepository messages;
-	private final UserRepository users;
-	public static String UPLOAD_ROOT = "upload-dir";
 
-	MongoInitiailizer(MessageRepository messages, UserRepository users) {
-		this.messages = messages;
-		this.users = users;
-	}
+    private final UserRepository users;
+    public static String UPLOAD_ROOT = "upload-dir";
 
-	@Override
-	public void afterSingletonsInstantiated() {
-		// sha256 w/ salt encoded "password"
-		String passsword = "73ac8218b92f7494366bf3a03c0c2ee2095d0c03a29cb34c95da327c7aa17173248af74d46ba2d4c";
+    MongoInitiailizer(UserRepository users) {
 
-		User rob = new User(1L, "rob@example.com", passsword, "Rob", "Winch");
-		User joe = new User(100L, "joe@example.com", passsword, "Joe", "Grandja");
+        this.users = users;
+    }
 
-		this.users.save(rob).block();
-		this.users.save(joe).block();
+    @Override
+    public void afterSingletonsInstantiated() {
+        // sha256 w/ salt encoded "password"
+        String passsword = "73ac8218b92f7494366bf3a03c0c2ee2095d0c03a29cb34c95da327c7aa17173248af74d46ba2d4c";
 
-		this.messages.save(new Message(1L, rob, joe, "Hello World")).block();
-		this.messages.save(new Message(2L, rob, joe, "Greetings KCDC")).block();
+        User rob = new User(1L, "rob@example.com", passsword, "Rob", "Winch");
+        User joe = new User(100L, "joe@example.com", passsword, "Joe", "Grandja");
 
-		this.users.findAll().doOnNext(user -> user.setPassword("{sha256}" + user.getPassword()))
-				.flatMap(this.users::save).collectList().block();
-	}
+        this.users.save(rob).block();
+        this.users.save(joe).block();
 
-	@Bean
-	CommandLineRunner init(MongoOperations operations) {
-		return args -> {
-			// tag::log[]
-			operations.dropCollection(Image.class);
+        this.users.findAll().doOnNext(user -> user.setPassword("{sha256}" + user.getPassword()))
+                .flatMap(this.users::save).collectList().block();
+    }
 
-			operations.insert(new Image("1", "learning-spring-boot-cover.jpg"));
-			operations.insert(new Image("2", "learning-spring-boot-2nd-edition-cover.jpg"));
-			operations.insert(new Image("3", "bazinga.png"));
+    @Bean
+    CommandLineRunner init(MongoOperations operations) {
+        return args -> {
+            // tag::log[]
+            operations.dropCollection(Image.class);
+            operations.createCollection(Image.class);
 
-			operations.findAll(Image.class).forEach(image -> {
-				System.out.println(image.toString());
-			});
-			// end::log[]
-		};
-	}
+            operations.insert(new Image("1", "learning-spring-boot-cover.jpg"));
+            operations.insert(new Image("2", "learning-spring-boot-2nd-edition-cover.jpg"));
+            operations.insert(new Image("3", "bazinga.png"));
+
+            operations.findAll(Image.class).forEach(image -> {
+                System.out.println(image.toString());
+            });
+            // end::log[]
+        };
+    }
 
 }

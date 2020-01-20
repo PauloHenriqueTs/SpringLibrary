@@ -49,7 +49,6 @@ public class ImageController {
 
     @PostMapping(value = BASE_PATH)
     public Mono<String> createFile(@RequestPart(name = "file") Flux<FilePart> files) {
-
         return imageService.createImage(files).then(Mono.just("redirect:/"));
     }
 

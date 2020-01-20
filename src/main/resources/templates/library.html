@@ -13,13 +13,13 @@
   <body>
     <div class="container" layout:fragment="content">
       <h1>Learning Spring Boot - 2nd Edition</h1>
-      <table>
+      <table class="table">
         <thead>
           <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Image</th>
-            <th></th>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Image</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -29,8 +29,8 @@
             <td>
               <a th:href="@{'/images/' + ${image.name} + '/raw'}">
                 <img
+                  class="img-fluid img-thumbnail"
                   th:src="@{'/images/'+${image.name}+'/raw'}"
-                  class="thumbnail"
                 />
               </a>
             </td>
@@ -39,7 +39,9 @@
                 th:method="delete"
                 th:action="@{'/images/' + ${image.name}}"
               >
-                <button type="submit" th:value="Delete">delete</button>>
+                <button class="btn btn-primary" type="submit" th:value="Delete">
+                  delete
+                </button>
               </form>
             </td>
           </tr>
@@ -51,8 +53,12 @@
         th:method="post"
         enctype="multipart/form-data"
       >
-        <p><input type="file" name="file" /></p>
-        <p><button type="submit" th:value="Upload">Upload</button></p>
+        <p><input class="input-group-prepend" type="file" name="file" /></p>
+        <p>
+          <button class="btn btn-secondary" type="submit" th:value="Upload">
+            Upload
+          </button>
+        </p>
       </form>
     </div>
   </body>

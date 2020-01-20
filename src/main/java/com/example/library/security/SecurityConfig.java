@@ -2,32 +2,21 @@ package com.example.library.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authorization.AuthorizationContext;
-import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 	@Bean
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		http.authorizeExchange().pathMatchers("/users").access(this::isRob)
-				.pathMatchers("/login", "/signup", "/webjars/**", "/images").permitAll().anyExchange().authenticated()
-				.and().httpBasic().and().formLogin().loginPage("/login").and().csrf().disable();
+		http.authorizeExchange().pathMatchers("/login", "/signup", "/webjars/**", "/images").permitAll().anyExchange()
+				.authenticated().and().httpBasic().and().formLogin().loginPage("/login").and().csrf().disable();
 
 		return http.build();
-	}
-
-	private Mono<AuthorizationDecision> isRob(Mono<Authentication> authentication,
-			AuthorizationContext authorizationContext) {
-		return authentication.map(Authentication::getName).map(username -> username.startsWith("rob@"))
-				.map(AuthorizationDecision::new);
 	}
 
 	@Bean
